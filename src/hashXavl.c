@@ -3,7 +3,7 @@
 #include "./include/hash.h"
 #include "./include/utils.h"
 
-int main(){
+int main_teste_leitura(){
     /*Primeiro teste de leitura das arquivos.in*/
 
     FILE* medidas = fopen("../medidas_2_05.in", "r");
@@ -35,5 +35,28 @@ int main(){
     fclose(medidas);
     printf("Leitura finalizada. Total de sensores lidos: %d\n", contador); 
 
+    return 0;
+}
+
+int main_teste_extrair_hora(){
+    /*Teste da função de extrair hora*/
+    char* horario_teste[] = {
+        "14:30:45",
+        "09:15:00",
+        "23:59:59",
+        "00:00:00"
+    };
+    int num_testes = sizeof(horario_teste) / sizeof(horario_teste[0]);
+
+    for(int i=0; i<num_testes; i++){
+        char* hora_extraida = extrair_hora(horario_teste[i]);
+        if(hora_extraida != NULL){
+            printf("Horario original: %s -> Hora extraida: %s\n", horario_teste[i], hora_extraida);
+            free(hora_extraida);
+        }else{
+            printf("Falha ao extrair hora do horario: %s\n", horario_teste[i]);
+        }
+    }
+    printf("--------------------------------\n");
     return 0;
 }
