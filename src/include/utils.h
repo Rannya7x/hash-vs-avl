@@ -9,3 +9,4 @@ typedef struct {
 } t_registro_sensor;
 
 t_registro_sensor* ler_sensor(FILE* medidas);
+char* extrair_hora(char* horario);
