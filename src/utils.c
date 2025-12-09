@@ -44,3 +44,15 @@ char* extrair_hora(char* horario){
     hora[2] = '\0'; // Adiciona o terminador nulo
     return hora;
 }
+
+// Função para calcular a Média Móvel Exponencial (MME)
+double calcular_mme(double media_anterior, double medicao_atual, double alpha){
+    // Se media_anterior for 0 (t=1), a nova média é simplesmente a medição atual
+   
+    if(media_anterior == 0.0){
+        return medicao_atual;
+    }
+
+    //O cálculo da MME para t>1 é dado por: MME_t = alpha * medicao_atual + (1 - alpha) * media_anterior
+    return alpha * medicao_atual + (1.0 - alpha) * media_anterior;
+}

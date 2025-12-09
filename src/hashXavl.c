@@ -60,3 +60,34 @@ int main_teste_extrair_hora(){
     printf("--------------------------------\n");
     return 0;
 }
+int main(){
+    /*Teste de Calculo da Media Movel Exponencial*/
+
+    //Ex:
+    const double alpha = 0.40; //Fator de suavização
+
+    double medicoes[] = {100.0, 120.0, 90.0, 150.0};
+
+    //caso base: t=1
+    double media_suavizada = 0.0;
+
+    printf("Cálculo da Média Móvel Exponencial (MME) com alpha=%.2f\n", alpha);
+
+    
+    int t = 1;
+    for(int i=0;i<sizeof(medicoes)/sizeof(medicoes[0]);i++){
+        double medicao_atual = medicoes[i];//medição no tempo t
+        double media_anterior = media_suavizada;
+        media_suavizada = calcular_mme(media_anterior, medicao_atual, alpha);
+
+        if(t==1){
+            //Caso base: m_t = medicao_atual
+            printf("t=%d: Medição=%.2f -> MME=%.2f (caso base)\n", t, medicao_atual, media_suavizada);
+        } else{
+            double esperado = alpha * medicao_atual + (1.0 - alpha) * media_anterior; 
+            printf("t=%d Med. Atual=%.2f, MME_ant=%.4f. MME_nova = %.4f (Esperado: %.4f)\n", t, medicao_atual, media_anterior, media_suavizada, esperado);
+        }
+        t++;
+    }
+    printf("-----------------------------------------\n");
+}

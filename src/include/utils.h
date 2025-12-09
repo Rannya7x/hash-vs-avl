@@ -10,3 +10,4 @@ typedef struct {
 
 t_registro_sensor* ler_sensor(FILE* medidas);
 char* extrair_hora(char* horario);
+double calcular_mme(double media_anterior, double medicao_atual, double alpha);
