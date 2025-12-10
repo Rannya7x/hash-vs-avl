@@ -1,7 +1,9 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "./include/hash.h"
+#include "./include/avl.h"
 #include "./include/utils.h"
+#include "./include/metrics.h"
 
 int main_teste_leitura(){
     /*Primeiro teste de leitura das arquivos.in*/
@@ -109,6 +111,13 @@ int main(){
         printf("Processando instância: %s\n", instancia_atual);
 
         //1. Inicialização da Hash, Avl e Metricas
+        Metrics* hash_metrics = init_metrics();
+        Metrics* avl_metrics = init_metrics();
+
+        //Inicialização da Hash e AVL
+        t_hash* hash = hash_criar(hash_metrics);
+        t_avl* avl = avl_criar(NULL, NULL, avl_metrics);
+
         //2. Leitura do arquivo e inserção na Hash/AVL
         //3. Consolidação das medições (Cálculo da MME)
         //4. Coleta e exibição das métricas
