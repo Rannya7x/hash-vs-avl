@@ -94,10 +94,10 @@ int main_teste_mme(){
 
 //Vetor de nomes das 4 instâncias de teste
 const char* instancias[] = {
-    "../medidas_2_05.in",
-    "../medidas_2_10.in",
-    "../medidas_2_15.in",
-    "../medidas_2_20.in"
+    "medidas_2_05.in",
+    "medidas_2_10.in",
+    "medidas_2_15.in",
+    "medidas_2_20.in"
 };
 //A main irá iterar sobre as 4 instâncias, executando o experimento: inicialização, inserção, consolidação e coleta de métricas para cada arquivo de medidas.
 int main(){
