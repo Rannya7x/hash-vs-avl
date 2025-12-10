@@ -22,7 +22,9 @@ Metrics* init_metrics(){
 
 //Liberar metricas
 void free_metrics(Metrics* metrics){
-    if(metrics!=NULL){
-        free(metrics);
+    if(metrics==NULL){
+        printf("Métricas já estão nulas ao tentar liberar memória\n");
+        return;
     }
+    free(metrics);
 }
