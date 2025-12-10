@@ -56,3 +56,9 @@ double calcular_mme(double media_anterior, double medicao_atual, double alpha){
     //O cálculo da MME para t>1 é dado por: MME_t = alpha * medicao_atual + (1 - alpha) * media_anterior
     return alpha * medicao_atual + (1.0 - alpha) * media_anterior;
 }
+
+// Função para gerar uma chave hash a partir do id do sensor e da hora
+int gerar_chave_hash(int id_sensor, char* hora){
+    int hora_int = atoi(hora); // Converte a hora "HH" para um inteiro
+    return (id_sensor*100) + hora_int; // Gera a chave combinando id e hora
+}
