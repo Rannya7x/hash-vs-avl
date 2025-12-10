@@ -37,7 +37,6 @@ int main_teste_leitura(){
 
     return 0;
 }
-
 int main_teste_extrair_hora(){
     /*Teste da função de extrair hora*/
     char* horario_teste[] = {
@@ -60,7 +59,7 @@ int main_teste_extrair_hora(){
     printf("--------------------------------\n");
     return 0;
 }
-int main(){
+int main_teste_mme(){
     /*Teste de Calculo da Media Movel Exponencial*/
 
     //Ex:
@@ -90,4 +89,33 @@ int main(){
         t++;
     }
     printf("-----------------------------------------\n");
+}
+
+
+//Vetor de nomes das 4 instâncias de teste
+const char* instancias[] = {
+    "../medidas_2_05.in",
+    "../medidas_2_10.in",
+    "../medidas_2_15.in",
+    "../medidas_2_20.in"
+};
+//A main irá iterar sobre as 4 instâncias, executando o experimento: inicialização, inserção, consolidação e coleta de métricas para cada arquivo de medidas.
+int main(){
+    for(int i=0;i<4;i++){
+        printf("----- Iniciando experimento -----\n");
+
+        const char* instancia_atual = instancias[i];
+
+        printf("Processando instância: %s\n", instancia_atual);
+
+        //1. Inicialização da Hash, Avl e Metricas
+        //2. Leitura do arquivo e inserção na Hash/AVL
+        //3. Consolidação das medições (Cálculo da MME)
+        //4. Coleta e exibição das métricas
+        //5. Liberação de memória e finalização do experimento
+        //6. Geração do Arquivo .cons
+
+        //restante do código do experimento aqui
+    }
+    return 0;
 }
