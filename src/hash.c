@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include "./include/listase.h"
 #include "assert.h"
+#include "./include/metrics.h"
 
 typedef struct {
     int chave;
@@ -43,7 +44,7 @@ static int hashing(t_hash *hash, int chave){
     return (chave%hash->M);
 }
 
-t_hash* hash_criar(){
+t_hash* hash_criar(Metrics* metrics){
     t_hash* novo = malloc(sizeof(t_hash));
     novo->M = 7;
     novo->N = 0;
