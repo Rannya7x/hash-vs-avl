@@ -28,3 +28,6 @@ typedef struct {
 
     
 }Metrics;
+
+Metrics* init_metrics();
+void free_metrics(Metrics* metrics);
