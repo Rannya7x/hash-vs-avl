@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "./include/avl.h"
+#include "./include/metrics.h"
 
 typedef struct no
 {
@@ -31,7 +32,7 @@ typedef struct avl
     t_avl_comparar comparar;
 }t_avl;
 
-t_avl* avl_criar(t_avl_imprimir imprimir, t_avl_comparar comparar){
+t_avl* avl_criar(t_avl_imprimir imprimir, t_avl_comparar comparar, Metrics* metrics){
     t_avl *nova = malloc(sizeof(t_avl));
     nova->raiz = NULL;
     nova->imprimir = imprimir;
