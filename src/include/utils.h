@@ -21,3 +21,7 @@ typedef struct {
 
 //Já que a hash trabalha com inteiros, vamos fundir o id e a hora em um único inteiro
 int gerar_chave_hash(int id_sensor, char* hora);
+
+typedef struct{
+    double media_suavizada;
+}t_estado_mme;
