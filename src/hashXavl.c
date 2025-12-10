@@ -116,7 +116,7 @@ int main(){
 
         //Inicialização da Hash e AVL
         t_hash* hash = hash_criar(hash_metrics);
-        t_avl* avl = avl_criar(NULL, NULL, avl_metrics);
+        t_avl* avl = avl_criar(imprimir_mme, comparar_mme, avl_metrics);
 
         //2. Leitura do arquivo e inserção na Hash/AVL
         //3. Consolidação das medições (Cálculo da MME)

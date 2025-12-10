@@ -1,7 +1,6 @@
-/* Utilitários para manipulação de registros de sensores
-
-*/
+/* Utilitários para manipulação de registros de sensores*/
 #include "./include/utils.h"
+#include "./include/avl.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -58,7 +57,33 @@ double calcular_mme(double media_anterior, double medicao_atual, double alpha){
 }
 
 // Função para gerar uma chave hash a partir do id do sensor e da hora
-int gerar_chave_hash(int id_sensor, char* hora){
+int gerar_chave_int(int id_sensor, char* hora){
     int hora_int = atoi(hora); // Converte a hora "HH" para um inteiro
     return (id_sensor*100) + hora_int; // Gera a chave combinando id e hora
+}
+
+// Função para comparar duas estruturas t_info_consolidada com base na MME suavizada
+int comparar_mme(void* chave1, void* chave2){
+    t_info_consolidada* info1 = (t_info_consolidada*)chave1;
+    t_info_consolidada* info2 = (t_info_consolidada*)chave2;
+
+    //intrumentação para incrementar a contagem de comparações (custo_agregado)
+
+    if(info1->chave_consolidacao > info2->chave_consolidacao){
+        return 1;
+    }else if(info1->chave_consolidacao < info2->chave_consolidacao){
+        return -1;
+    }else{
+        return 0;
+    }
+}
+
+void imprimir_mme(void* info){
+    t_info_consolidada* estado = (t_info_consolidada*)info;
+    printf("Sensor ID: %d | Hora: %d | Chave: %d | MME Suavizada: %.3f\n",
+        estado->id_sensor,
+        estado->hora,
+        estado->chave_consolidacao,
+        estado->mme_suavizada
+    );
 }
