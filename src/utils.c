@@ -32,7 +32,7 @@ t_registro_sensor* ler_sensor(FILE* medidas){
 }
 
 // Função para extrair a hora de uma string no formato "HH:MM:SS"
-char* extrair_hora(char* horario){
+int* extrair_hora(char* horario){
     char* hora = (char*)malloc(sizeof(char)*3);//Aloca espaço para "HH" + '\0'
 
     if(hora==NULL){
@@ -41,7 +41,8 @@ char* extrair_hora(char* horario){
     }
     strncpy(hora, horario, 2);
     hora[2] = '\0'; // Adiciona o terminador nulo
-    return hora;
+    int hora_int = atoi(hora);//
+    return hora_int;
 }
 
 // Função para calcular a Média Móvel Exponencial (MME)
@@ -60,6 +61,30 @@ double calcular_mme(double media_anterior, double medicao_atual, double alpha){
 int gerar_chave_int(int id_sensor, char* hora){
     int hora_int = atoi(hora); // Converte a hora "HH" para um inteiro
     return (id_sensor*100) + hora_int; // Gera a chave combinando id e hora
+}
+
+// Criação e liberação de t_info_consolidada
+t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor, int hora, double alpha){
+    t_info_consolidada* nova_info = (t_info_consolidada*)malloc(sizeof(t_info_consolidada));
+    if(nova_info == NULL){
+        printf("Erro de alocação de memória em criar_info_consolidada\n");
+        return NULL;
+    }else{
+        nova_info->chave_consolidacao = chave;
+        nova_info->mme_suavizada = mme;
+        nova_info->id_sensor = id_sensor;
+        nova_info->hora = hora;
+        nova_info->alpha = alpha;
+        return nova_info;
+    }
+}
+
+void liberar_info_consolidada(t_info_consolidada* info){
+    if(info==NULL){
+        perror("Info já é NULL ao liberar_info_consolidada\n");
+        return;
+    }
+    free(info);
 }
 
 // Função para comparar duas estruturas t_info_consolidada com base na MME suavizada
