@@ -58,9 +58,8 @@ double calcular_mme(double media_anterior, double medicao_atual, double alpha){
 }
 
 // Função para gerar uma chave hash a partir do id do sensor e da hora
-int gerar_chave_int(int id_sensor, char* hora){
-    int hora_int = atoi(hora); // Converte a hora "HH" para um inteiro
-    return (id_sensor*100) + hora_int; // Gera a chave combinando id e hora
+int gerar_chave_int(int id_sensor, int* hora){
+    return (id_sensor*100) + hora; // Gera a chave combinando id e hora
 }
 
 // Criação e liberação de t_info_consolidada

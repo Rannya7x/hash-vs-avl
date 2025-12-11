@@ -13,7 +13,7 @@ t_registro_sensor* ler_sensor(FILE* medidas);
 int* extrair_hora(char* horario);
 double calcular_mme(double media_anterior, double medicao_atual, double alpha);
 //fundir o id e a hora em um único inteiro
-int gerar_chave_int(int id_sensor, char* hora);
+int gerar_chave_int(int id_sensor, int* hora);
 
 //Estrutura unificada da chave de consolidação e estado MME
 typedef struct{
