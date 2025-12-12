@@ -4,16 +4,20 @@
 #include "./include/avl.h"
 #include "./include/utils.h"
 #include "./include/metrics.h"
-
+/*
 const char* instancias[] = {
     "medidas_2_05.in",
     "medidas_2_10.in",
     "medidas_2_15.in",
     "medidas_2_20.in"
+};*/
+
+const char* instancias[] = {
+    "1testehash.in"
 };
 //A main irá iterar sobre as 4 instâncias, executando o experimento: inicialização, inserção, consolidação e coleta de métricas para cada arquivo de medidas.
 int main(){
-    for(int i=0;i<4;i++){
+    for(int i=0;i<1;i++){
         printf("----- Iniciando experimento -----\n");
 
         const char* instancia_atual = instancias[i];
@@ -24,7 +28,7 @@ int main(){
         Metrics* avl_metrics = init_metrics();
 
         t_hash* hash = hash_criar(hash_metrics);
-        t_avl* avl = avl_criar(imprimir_mme, comparar_mme, avl_metrics);
+        t_avl* avl = avl_criar(imprimir_mme, comparar_mme, avl_metrics); 
 
         //2. Leitura do arquivo e inserção na Hash
          
@@ -39,44 +43,94 @@ int main(){
         printf("Iniciando inserção na Hash...\n");
         while ((sensor_hash = ler_sensor(medidas))!=NULL){//Enquanto houver registros a serem lidos
             //Geração da chave hash
-            int* hora_ptr = extrair_hora(sensor_hash->horario);
-            int chave = gerar_chave_int(sensor_hash->id, hora_ptr);
-            int hora = *hora_ptr; 
-            free(hora_ptr);
+            int hora = extrair_hora(sensor_hash->horario);
+            printf("Hora extraída: %d\n", hora);
+            int chave = gerar_chave_int(sensor_hash->id, hora);
+            printf("Hora apos geração da chave: %d\n", hora);
+            
+            printf("ID: %d, Chave gerada: %d, Valor: %d, Hora: %d\n",sensor_hash->id, chave, sensor_hash->valor, hora);
             /*Busca do MME
             Se a busca retornar NUll, significa que é a primeira medição para aquele sensor_hash na hora
                 - add a medição atual como MME na hash
             Se a busca retornar um valor válido, usamos a MME retornada para calcular a nova MME
                 - atualizar a hash com a nova MME*/
             info = (t_info_consolidada*)hash_buscar(hash, chave);//a hash geralmente é mais rapida
+            printf("Busca da chave %d retornou info %p\n", chave, (void*)info);
+            printf("Valor mme antes da atualização: %lf\n", (info != NULL) ? info->mme_suavizada : 0.0);
             if(info == NULL){
                 info = criar_info_consolidada(chave, sensor_hash->valor, sensor_hash->id, hora, sensor_hash->alpha);
+                printf("Info == NULL, nova_mme = %lf\n", info->mme_suavizada);
                 hash_inserir(hash, chave, info);
             }else{
                 double nova_mme = calcular_mme(info->mme_suavizada, sensor_hash->valor, info->alpha);
                 info->mme_suavizada = nova_mme;
+                printf("Info != NULL, nova_mme = %lf\n", info->mme_suavizada);
             }
             free(sensor_hash);
             printf("Inserção na Hash concluída para chave %d.\n", chave);
         }
+        //3. Consolidação e calculo MME
+        printf("\n--- CONTEÚDO FINAL CONSOLIDADO DA HASH ---\n");
+        imprimir_hash_consolidado(hash);
+
+        //4. Coleta de metricas
+
+        //5. Liberação de memória e finalização do experimento
+        hash_destruir(hash);
+        free_metrics(hash_metrics); 
+        printf("-----------------------------------------\n");
 
         //Loop da avl
         rewind(medidas);
         printf("Ponteiro do arquivo reiniciado para inserção na AVL.\n");
         printf("Iniciando inserção na AVL...\n");
 
-       /* while(true){
+        t_registro_sensor* sensor_avl;
+        t_info_consolidada* info_avl = NULL;
+        while((sensor_avl = ler_sensor(medidas))!=NULL){
+            int hora = extrair_hora(sensor_avl->horario);
+            int chave = gerar_chave_int(sensor_avl->id, hora);
 
-        }*/
+            //variavel temporaria para busca na avl
+            t_info_consolidada chave_temp;
+            chave_temp.chave_consolidacao = chave;
+
+            printf("ID: %d, Chave %d, valor: %d, hora: %d\n", sensor_avl->id, chave, sensor_avl->valor, hora);
+            info_avl = (t_info_consolidada*)avl_buscar(avl, &chave_temp); 
+            printf("Busca da chave %d retornou info_avl %p\n", chave, (void*)info_avl);
+            printf("Valor mme antes da atualização: %lf\n", (info_avl != NULL) ? info_avl->mme_suavizada : 0.0);
+            if(info_avl == NULL){
+                info_avl = criar_info_consolidada(chave, sensor_avl->valor, sensor_avl->id, hora, sensor_avl->alpha);
+                printf("Info == NULL, nova_mme = %lf\n", info_avl->mme_suavizada);
+                avl_inserir(avl, info_avl);
+            }else{
+                double nova_mme = calcular_mme(info_avl->mme_suavizada, sensor_avl->valor, info_avl->alpha);
+                info_avl->mme_suavizada = nova_mme;
+                printf("Info != NULL, nova_mme = %lf\n", info_avl->mme_suavizada);
+            }
+            free(sensor_avl);
+            printf("Inserção na AVL concluída para chave %d.\n", chave);
+
+        }
+        //3. Consolidação e calculo MME
+        printf("\n--- CONTEÚDO FINAL CONSOLIDADO DA AVL ---\n");
+        avl_em_ordem(avl);
         
+        //4. Liberação de memória e finalização do experimento
         fclose(medidas);
         printf("Medidas fechadas.\n");
-        //3. Consolidação das medições (Cálculo da MME)
-        //4. Coleta e exibição das métricas
-        //5. Liberação de memória e finalização do experimento
-        //6. Geração do Arquivo .cons
+        avl_destruir(avl, liberar_info_consolidada);
+        free_metrics(avl_metrics);
+        printf("-----------------------------------------\n");
+        printf("Experimento concluído para a instância: %s\n", instancia_atual);
+        printf("----- Fim do experimento -----\n\n");
+
+        //6. Coleta das métricas
+        //7. Geração de gráficos
+        //. Geração do Arquivo .cons
 
         //restante do código do experimento aqui
     }
+    
     return 0;
 }
