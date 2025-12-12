@@ -227,3 +227,48 @@ void* avl_remover(t_avl* avl, void* chave){
     return info;
 }
 
+static void __avl_destruir(t_no* raiz, t_avl_destruir destruir){
+    if(raiz==NULL){
+        return;
+    }
+    __avl_destruir(raiz->sae, destruir);
+    __avl_destruir(raiz->sad, destruir);
+
+    //liberar carga util
+    if(destruir!=NULL){
+        destruir(raiz->info);
+    }
+
+    free(raiz);
+}
+
+void avl_destruir(t_avl* avl, t_avl_destruir destruir){
+    if(avl==NULL){
+        return;
+    }
+
+    __avl_destruir(avl->raiz, destruir);
+
+    free(avl);
+}
+
+void __em_ordem(t_no* no, t_avl_imprimir imprimir){
+    if(no==NULL){
+        return;
+    }
+    __em_ordem(no->sae, imprimir);
+    imprimir(no->info);
+    __em_ordem(no->sad, imprimir);
+
+}
+
+void avl_em_ordem(t_avl* avl){
+    if(avl==NULL){
+        return;
+    }
+
+    __em_ordem(avl->raiz, avl->imprimir);
+
+
+}
+
