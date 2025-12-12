@@ -16,7 +16,7 @@ Metrics* init_metrics(){
     metrics->hash_clusterizacao = 0.0;
     metrics->hash_redimensionamentos = 0;
     metrics->avl_rotacoes = 0;
-    metrics->avl_altura = 0;
+    metrics->avl_altura = -1; //avl vazia
     return metrics;
 }
 
