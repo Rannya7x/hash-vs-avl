@@ -23,13 +23,12 @@ static t_no* no_criar(void* info, t_no* actral){
     return novo;
 }
 
-typedef void (*t_avl_imprimir)(void*);
-typedef int (*t_avl_comparar)(void*, void*);
 typedef struct avl
 {
     t_no* raiz;
     t_avl_imprimir imprimir;
     t_avl_comparar comparar;
+    Metrics* metrics;
 }t_avl;
 
 t_avl* avl_criar(t_avl_imprimir imprimir, t_avl_comparar comparar, Metrics* metrics){
@@ -37,7 +36,7 @@ t_avl* avl_criar(t_avl_imprimir imprimir, t_avl_comparar comparar, Metrics* metr
     nova->raiz = NULL;
     nova->imprimir = imprimir;
     nova->comparar = comparar;
-
+    nova->metrics = metrics;
     return nova;
 }
 
@@ -49,7 +48,13 @@ static int __altura_avl(t_no *no){
     }
     return MAX(__altura_avl(no->sae), __altura_avl(no->sad)) + 1;
 }
-static t_no* __rsd(t_no* A, t_no* B){
+int avl_altura(t_avl* avl){
+    if (avl == NULL || avl->raiz == NULL) {
+        return -1;  // Árvore vazia
+    }
+    return __altura_avl(avl->raiz);
+}
+static t_no* __rsd(t_no* A, t_no* B, Metrics* metrics){
     A->sae = B->sad;
     B->sad = A;
 
@@ -57,11 +62,11 @@ static t_no* __rsd(t_no* A, t_no* B){
     A->actral = B;
     B->fb = __altura_avl(B->sad) - __altura_avl(B->sae);
     A->fb = __altura_avl(A->sad) - __altura_avl(A->sae);
-
+    metrics->avl_rotacoes++;
     return B;
 }
 
-static t_no* __rse(t_no* A, t_no* B){
+static t_no* __rse(t_no* A, t_no* B, Metrics* metrics){
     A->sad = B->sae;
     B->sae = A;
 
@@ -70,40 +75,40 @@ static t_no* __rse(t_no* A, t_no* B){
     
     B->fb = __altura_avl(B->sad) - __altura_avl(B->sae);
     A->fb = __altura_avl(A->sad) - __altura_avl(A->sae);
-
+    metrics->avl_rotacoes++;
     return B;
 }
 
-static t_no* __avl_inserir(t_no* raiz, void* info, t_no* actral, t_avl_comparar comparar){
+static t_no* __avl_inserir(t_no* raiz, void* info, t_no* actral, t_avl_comparar comparar, Metrics* metrics){
     if(raiz == NULL){
         t_no* novo = no_criar(info,actral);
         return novo;
     }else{
-        int rest = comparar(raiz->info, info);
+        int rest = comparar(raiz->info, info, metrics);
         if(rest > 0){ // inserir sae
-            raiz->sae = __avl_inserir(raiz->sae, info, raiz, comparar);
+            raiz->sae = __avl_inserir(raiz->sae, info, raiz, comparar, metrics);
             t_no* sae = raiz->sae;
             raiz->fb = __altura_avl(raiz->sad) - __altura_avl(raiz->sae);
             if (raiz->fb == -2){
                 if (sae->fb == -1){ // rotação simples
-                    raiz = __rsd(raiz, sae);
+                    raiz = __rsd(raiz, sae, metrics);
                 }else{ // rotação duplas
                     t_no* aux = sae->sad;
-                    __rse(sae, aux);
-                    raiz = __rsd(raiz, aux);
+                    __rse(sae, aux, metrics);
+                    raiz = __rsd(raiz, aux, metrics);
                 }
             }
         }else{ // inserir sad
-            raiz->sad = __avl_inserir(raiz->sad, info, raiz, comparar);
+            raiz->sad = __avl_inserir(raiz->sad, info, raiz, comparar, metrics);
             t_no* sad = raiz->sad;
             raiz->fb = __altura_avl(raiz->sad) - __altura_avl(raiz->sae);
             if(raiz->fb == 2){
                 if (sad->fb == 1){
-                    raiz = __rse(raiz, sad);
+                    raiz = __rse(raiz, sad, metrics);
                 }else{
                     t_no* aux = sad->sae;
-                    __rsd(sad, aux);
-                    raiz = __rse(raiz, aux);
+                    __rsd(sad, aux, metrics);
+                    raiz = __rse(raiz, aux, metrics);
                 }
             }
         }
@@ -112,27 +117,27 @@ static t_no* __avl_inserir(t_no* raiz, void* info, t_no* actral, t_avl_comparar 
 }
 
 void avl_inserir(t_avl* avl, void* info){
-    avl->raiz = __avl_inserir(avl->raiz, info, NULL, avl->comparar);
+    avl->raiz = __avl_inserir(avl->raiz, info, NULL, avl->comparar, avl->metrics);
 }
 
 
-static t_no* __avl_buscar(t_no* raiz, t_avl_comparar comparar, void* chave){
+static t_no* __avl_buscar(t_no* raiz, t_avl_comparar comparar, void* chave, Metrics* metrics){
     if (raiz == NULL){
         return NULL;
     }
-    int res = comparar(raiz->info, chave); 
+    int res = comparar(raiz->info, chave, metrics); 
     if( res == 0){
         return raiz;
     } else if (res > 0){
-        return __avl_buscar(raiz->sae, comparar, chave);
+        return __avl_buscar(raiz->sae, comparar, chave, metrics);
     } else {
-        return __avl_buscar(raiz->sad, comparar, chave);
+        return __avl_buscar(raiz->sad, comparar, chave, metrics);
     }
 }
 
 void* avl_buscar(t_avl* avl, void* chave){
     
-    t_no* no = __avl_buscar(avl->raiz, avl->comparar, chave);
+    t_no* no = __avl_buscar(avl->raiz, avl->comparar, chave, avl->metrics);
     if (no!=NULL){
         return no->info;
     }
@@ -145,37 +150,37 @@ static void __trocar(t_no* i1, t_no* i2){
     i2->info = aux;
 }
 
-static t_no* __avl_remover(t_no* raiz, t_avl_comparar comparar, void* chave, void* *placeholder){
+static t_no* __avl_remover(t_no* raiz, t_avl_comparar comparar, void* chave, void* *placeholder, Metrics* metrics){
     if (raiz == NULL){
         *placeholder=NULL;
         return NULL;
     }else{
-        int res = comparar(raiz->info, chave);
+        int res = comparar(raiz->info, chave, metrics);
         if(res > 0){
-            raiz->sae = __avl_remover(raiz->sae, comparar, chave, placeholder);
+            raiz->sae = __avl_remover(raiz->sae, comparar, chave, placeholder, metrics);
             t_no* sad = raiz->sad;
             raiz->fb = __altura_avl(raiz->sad) - __altura_avl(raiz->sae);
             if (raiz->fb == 2){
                 if (sad->fb >= 0){ // rotação simples
-                    raiz = __rse(raiz, sad);
+                    raiz = __rse(raiz, sad, metrics);
                 }else{ // rotação duplas
                     t_no* aux = sad->sae;
-                    __rsd(sad, aux);
-                    raiz = __rse(raiz, aux);
+                    __rsd(sad, aux, metrics);
+                    raiz = __rse(raiz, aux, metrics);
                 }
             }    
             return raiz;
         } else if (res < 0){
-            raiz->sad = __avl_remover(raiz->sad, comparar, chave, placeholder);
+            raiz->sad = __avl_remover(raiz->sad, comparar, chave, placeholder, metrics);
             t_no* sae = raiz->sae;
             raiz->fb = __altura_avl(raiz->sad) - __altura_avl(raiz->sae);
             if(raiz->fb == -2){
                 if (sae->fb <= 0){
-                    raiz = __rsd(raiz, sae);
+                    raiz = __rsd(raiz, sae, metrics);
                 }else{
                     t_no* aux = sae->sad;
-                    __rse(sae, aux);
-                    raiz = __rsd(raiz, aux);
+                    __rse(sae, aux, metrics);
+                    raiz = __rsd(raiz, aux, metrics);
                 }
             }    
             return raiz;
@@ -209,7 +214,7 @@ static t_no* __avl_remover(t_no* raiz, t_avl_comparar comparar, void* chave, voi
                     no = no->sae;
                 } 
                 __trocar(raiz, no);
-                raiz->sad = __avl_remover(raiz->sad,comparar,chave, placeholder);
+                raiz->sad = __avl_remover(raiz->sad,comparar,chave, placeholder, metrics);
                 return raiz;
             }
         
@@ -221,7 +226,7 @@ static t_no* __avl_remover(t_no* raiz, t_avl_comparar comparar, void* chave, voi
 
 void* avl_remover(t_avl* avl, void* chave){
     void* info=NULL;
-    avl->raiz = __avl_remover(avl->raiz, avl->comparar, chave, &info);
+    avl->raiz = __avl_remover(avl->raiz, avl->comparar, chave, &info, avl->metrics);
     
 
     return info;
