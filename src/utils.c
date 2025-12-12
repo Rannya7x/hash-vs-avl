@@ -32,16 +32,13 @@ t_registro_sensor* ler_sensor(FILE* medidas){
 }
 
 // Função para extrair a hora de uma string no formato "HH:MM:SS"
-int* extrair_hora(char* horario){
-    char* hora = (char*)malloc(sizeof(char)*3);//Aloca espaço para "HH" + '\0'
+int extrair_hora(char* horario){
+    char hora_str[3];
 
-    if(hora==NULL){
-        printf("Erro de alocação de memória em extrair_hora\n");
-        return NULL;
-    }
-    strncpy(hora, horario, 2);
-    hora[2] = '\0'; // Adiciona o terminador nulo
-    int hora_int = atoi(hora);//
+    strncpy(hora_str, horario, 2);
+    hora_str[2] = '\0'; // Adiciona o terminador nulo
+    int hora_int = atoi(hora_str);//
+    
     return hora_int;
 }
 
@@ -58,8 +55,8 @@ double calcular_mme(double media_anterior, double medicao_atual, double alpha){
 }
 
 // Função para gerar uma chave hash a partir do id do sensor e da hora
-int gerar_chave_int(int id_sensor, int* hora){
-    return (id_sensor*100) + hora; // Gera a chave combinando id e hora
+int gerar_chave_int(int id_sensor, int hora){
+    return (id_sensor*100) + hora;
 }
 
 // Criação e liberação de t_info_consolidada
@@ -78,7 +75,8 @@ t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor,
     }
 }
 
-void liberar_info_consolidada(t_info_consolidada* info){
+void liberar_info_consolidada(void* info){
+    t_info_consolidada* nova_info = (t_info_consolidada*)info; 
     if(info==NULL){
         perror("Info já é NULL ao liberar_info_consolidada\n");
         return;

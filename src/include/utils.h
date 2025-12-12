@@ -10,10 +10,11 @@ typedef struct {
 t_registro_sensor* ler_sensor(FILE* medidas);
 
 // Funções utilitárias
-int* extrair_hora(char* horario);
-double calcular_mme(double media_anterior, double medicao_atual, double alpha);
+int extrair_hora(char* horario);
 //fundir o id e a hora em um único inteiro
-int gerar_chave_int(int id_sensor, int* hora);
+int gerar_chave_int(int id_sensor, int hora);
+double calcular_mme(double media_anterior, double medicao_atual, double alpha);
+
 
 //Estrutura unificada da chave de consolidação e estado MME
 typedef struct{
@@ -25,7 +26,7 @@ typedef struct{
 }t_info_consolidada;
 // Criação e liberação de t_info_consolidada
 t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor, int hora, double alpha);
-void liberar_info_consolidada(t_info_consolidada* info);
+void liberar_info_consolidada(void* info);
 
 //Funções para AVL: impressão e comparação de t_info_consolidada
 int comparar_mme(void* chave1, void* chave2);
