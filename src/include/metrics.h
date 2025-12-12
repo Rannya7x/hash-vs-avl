@@ -1,4 +1,5 @@
 /* Estrutura para armazenar metricas da hash e da AVL
+
     hash:
     - Movimentações
     - Fator de Carga (α)
@@ -11,9 +12,11 @@
     - numero de elementos na estrutura
     - Custo agregado das operações de busca, inserção e remoção (comparações)
 */
-typedef struct {
+#ifndef METRICS_H
+#define METRICS_H
+typedef struct metrics{
     // Métrica geral
-    long long custo_agregado;
+    long long custo_agregado; //comparações de elementos armazenados totais
     long long numero_elementos;
 
     // Métricas da Hash
@@ -25,9 +28,9 @@ typedef struct {
     // Métricas da AVL
     long long avl_rotacoes;
     int avl_altura;
-
-    
 }Metrics;
 
 Metrics* init_metrics();
 void free_metrics(Metrics* metrics);
+
+#endif // METRICS_H
