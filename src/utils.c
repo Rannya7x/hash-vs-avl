@@ -85,11 +85,12 @@ void liberar_info_consolidada(void* info){
 }
 
 // Função para comparar duas estruturas t_info_consolidada com base na MME suavizada
-int comparar_mme(void* chave1, void* chave2){
+int comparar_mme(void* chave1, void* chave2, Metrics* metrics){
     t_info_consolidada* info1 = (t_info_consolidada*)chave1;
     t_info_consolidada* info2 = (t_info_consolidada*)chave2;
 
-    //intrumentação para incrementar a contagem de comparações (custo_agregado)
+    
+    if(metrics) metrics->custo_agregado++; 
 
     if(info1->chave_consolidacao > info2->chave_consolidacao){
         return 1;

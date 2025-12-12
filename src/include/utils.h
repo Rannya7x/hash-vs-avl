@@ -1,4 +1,5 @@
 #include "stdio.h"
+#include "metrics.h"
 
 typedef struct {
     int id;
@@ -29,5 +30,5 @@ t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor,
 void liberar_info_consolidada(void* info);
 
 //Funções para AVL: impressão e comparação de t_info_consolidada
-int comparar_mme(void* chave1, void* chave2);
+int comparar_mme(void* chave1, void* chave2, Metrics* metrics);
 void imprimir_mme(void* info);
