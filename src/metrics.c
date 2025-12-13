@@ -11,6 +11,7 @@ Metrics* init_metrics(){
     }
     metrics->custo_agregado = 0;
     metrics->numero_elementos = 0;
+    metrics->n=0;
     metrics->hash_movimentacoes = 0;
     metrics->hash_fator_carga = 0.0;
     metrics->hash_clusterizacao = 0.0;

@@ -277,3 +277,18 @@ void avl_em_ordem(t_avl* avl){
 
 }
 
+//ESCREVER NO ARQUIVO
+static void __em_ordem_com_ctx(t_no* no, t_avl_visitar_com_ctx visitar, void* contexto){
+    if (no==NULL){
+        return;
+    }
+    __em_ordem_com_ctx(no->sae, visitar, contexto);
+    visitar(no->info, contexto);
+    __em_ordem_com_ctx(no->sad, visitar, contexto);
+}
+void avl_percorrer_em_ordem_com_ctx(t_avl* avl, t_avl_visitar_com_ctx visitar, void* contexto){
+    if (avl==NULL){
+        return;
+    }
+    __em_ordem_com_ctx(avl->raiz, visitar, contexto);
+}

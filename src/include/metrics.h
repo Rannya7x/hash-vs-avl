@@ -18,6 +18,7 @@ typedef struct metrics{
     // Métrica geral
     long long custo_agregado; //comparações de elementos armazenados totais
     long long numero_elementos;
+    long long n; //tamanho da instancia
 
     // Métricas da Hash
     long long hash_movimentacoes;

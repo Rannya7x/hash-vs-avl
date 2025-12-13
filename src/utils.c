@@ -60,7 +60,7 @@ int gerar_chave_int(int id_sensor, int hora){
 }
 
 // Criação e liberação de t_info_consolidada
-t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor, int hora, double alpha){
+t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor, int hora, double alpha, int tipo){
     t_info_consolidada* nova_info = (t_info_consolidada*)malloc(sizeof(t_info_consolidada));
     if(nova_info == NULL){
         printf("Erro de alocação de memória em criar_info_consolidada\n");
@@ -71,6 +71,7 @@ t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor,
         nova_info->id_sensor = id_sensor;
         nova_info->hora = hora;
         nova_info->alpha = alpha;
+        nova_info->tipo = tipo;
         return nova_info;
     }
 }
@@ -109,4 +110,45 @@ void imprimir_mme(void* info){
         estado->chave_consolidacao,
         estado->mme_suavizada
     );
+}
+
+//Gerar arquivos consolidados .cons
+void gerar_nome_cons(const char* nome_in, char* buffer_saida, size_t tamanho_max){
+    strncpy(buffer_saida, nome_in, tamanho_max - 1);
+    buffer_saida[tamanho_max - 1] = '\0';
+
+    //localizar extensão
+    char* ponto_extensao = strrchr(buffer_saida, '.');
+
+    strcpy(ponto_extensao, ".cons");
+};
+ 
+void escrever_no_arquivo(void* info, void* contexto){
+    t_info_consolidada* consolidada = (t_info_consolidada*)info;
+    FILE* arquivo = (FILE*)contexto;
+
+    //id_sensor tipo chave mme_suavizada hora alpha
+    fprintf(arquivo, "%d\t%d\t%d\t%.3f\t%d\t%.2f\n",
+        consolidada->id_sensor,
+        consolidada->tipo,
+        consolidada->chave_consolidacao,
+        consolidada->mme_suavizada,
+        consolidada->hora,
+        consolidada->alpha
+    );
+}
+
+void escrever_csv(Metrics* hash_metrics, Metrics* avl_metrics, FILE* csv){
+    fprintf(csv, "%lld,%lld,%.2f,%.2f,%lld,%lld,%lld,%d,%lld\n",
+            hash_metrics->n, //assumindo que ambas tem o mesmo valor
+            hash_metrics->custo_agregado,
+            hash_metrics->hash_fator_carga,
+            hash_metrics->hash_clusterizacao,
+            hash_metrics->hash_redimensionamentos,
+            hash_metrics->hash_movimentacoes,
+            avl_metrics->custo_agregado,
+            avl_metrics->avl_altura,
+            avl_metrics->avl_rotacoes
+    );
+    printf("Arquivo metricas.csv gerado com sucesso.\n");
 }

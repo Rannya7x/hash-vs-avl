@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "metrics.h"
+#include "avl.h"
 
 typedef struct {
     int id;
@@ -24,11 +25,18 @@ typedef struct{
     int id_sensor;
     int hora; //hora extraída do horário completo
     double alpha; //fator de suavização
+    int tipo;
 }t_info_consolidada;
 // Criação e liberação de t_info_consolidada
-t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor, int hora, double alpha);
+t_info_consolidada* criar_info_consolidada(int chave, double mme, int id_sensor, int hora, double alpha, int tipo);
 void liberar_info_consolidada(void* info);
 
 //Funções para AVL: impressão e comparação de t_info_consolidada
 int comparar_mme(void* chave1, void* chave2, Metrics* metrics);
 void imprimir_mme(void* info);
+
+void gerar_nome_cons(const char* nome_in, char* buffer_saida, size_t tamanho_max);
+
+void escrever_no_arquivo(void* info, void* contexto);
+
+void escrever_csv(Metrics* hash_metrics, Metrics* avl_metrics, FILE* arquivo_csv);
